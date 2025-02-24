@@ -1,0 +1,9 @@
+RewriteEngine On
+
+RewriteCond %{QUERY_STRING} ^action=([^&]+)$ [NC]
+RewriteCond %{QUERY_STRING} !loop=off [NC]  # Prevents infinite loop
+RewriteRule ^index\.php$ /%1? [R=301,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9_-]+)$ index.php?action=$1&loop=off [QSA,L]
