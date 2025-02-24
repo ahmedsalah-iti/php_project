@@ -7,3 +7,6 @@ RewriteRule ^index\.php$ /%1? [R=301,L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^([a-zA-Z0-9_-]+)$ index.php?action=$1&loop=off [QSA,L]
+
+# Allow HTTP_AUTHORIZATION to be available in $_SERVER
+SetEnvIf Authorization "(.*)" HTTP_AUTHORIZATION=$1
