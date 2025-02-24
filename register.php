@@ -10,8 +10,8 @@
     $respone = array();
     $status = 'failed';
     $message = '';
-    User::RegisterNewUser($respone, $status, $message);
     
+    User::RegisterNewUser($respone, $status, $message);
 
     $respone['message'] = $message;
     $respone['status'] = $status;

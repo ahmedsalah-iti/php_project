@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                     $login = User::LoginWithEmail( $email, $pass );
                     if(Logic_Function::isFound($login)){
                         $respone['data'] = $login;
+                        $respone['data']['balance'] = 2856.55;//edit later
                         $status = 'success';
                         $message = 'logged in successfuly.';
                     }else{
@@ -36,7 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                     $login = User::loginWithToken(($token));
                     if(Logic_Function::isFound($login)){
                         $respone['data'] = $login;
+                        $respone['data']['balance'] = 2856.55;//edit later
                         $message = 'logged in successfuly.';
+                        $status = 'success';
                     }else{
                         $message = 'wrong / expired token.';
                     }

@@ -6,6 +6,7 @@ require_once('database.php');
 require_once('User.php');
 require_once('access_token.php');
 
+/////////////////////// THIS PAGE IS ONLY FOR TESTING AT THIS MOMENT. //////////////
 
 try{
 // $g = new Access_token(1);
