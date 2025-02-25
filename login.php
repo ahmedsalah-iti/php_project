@@ -22,7 +22,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                     $login = User::LoginWithEmail( $email, $pass );
                     if(Logic_Function::isFound($login)){
                         $respone['data'] = $login;
-                        $respone['data']['balance'] = 2856.55;//edit later
+                        $respone['data']['balance'] = User::getBalanceById($login['id']);
+                        // $respone['data']['balance'] = 2856.55;//edit l   ater
                         $status = 'success';
                         $message = 'logged in successfuly.';
                     }else{
@@ -35,9 +36,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                 if(Logic_Function::isFound($_SERVER['HTTP_AUTHORIZATION'])){
                     $token = $_SERVER['HTTP_AUTHORIZATION'];
                     $login = User::loginWithToken(($token));
-                    if(Logic_Function::isFound($login)){
+                    if(Logic_Function::isFound($login) && Logic_Function::isFound($login['id'])){
                         $respone['data'] = $login;
-                        $respone['data']['balance'] = 2856.55;//edit later
                         $message = 'logged in successfuly.';
                         $status = 'success';
                     }else{

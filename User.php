@@ -201,6 +201,8 @@
                             if ($isEmailFound['profile_img'] == null){
                                 $isEmailFound['profile_img'] = './uploads/empty.jpg';
                             }
+                            $userBalance = User::getBalanceById($isEmailFound['id']);
+                            $isEmailFound['balance'] = $userBalance;
                             return $isEmailFound;
                         }else{
                             return false;
@@ -236,6 +238,8 @@
                                 $res['profile_img'] = './uploads/empty.jpg';
                             }
                             // echo json_encode($res);
+                            $userBalance = User::getBalanceById($res['id']);
+                            $res['balance'] = $userBalance;
                             return $res;
                         }else{
                             return [];
@@ -607,6 +611,18 @@
             return false;
           }
 
+        }
+        static public function getBalanceById(int $id){
+            try{
+                $balance = __PDO__->pdo_query("select getUserBalance($id) AS balance",false);
+               if($balance['balance']){
+                   return $balance['balance'];
+               }else{
+                return 0.00;
+               }
+            }catch(PDOException $e){
+                return 0.00;
+            }
         }
     }
 ?>
