@@ -126,7 +126,7 @@
                 $userId = __PDO__->pdo_insert('User', (array)$this);
                 if($userId > 0){
                     $this->id = $userId;
-                    return true;
+                    return $userId;
                 }else{
                     return false;
                 }
