@@ -16,3 +16,11 @@ Download all `.sql` files from:
    SOURCE /path/to/db_project_improved/create_tables.sql;
    SOURCE /path/to/db_project_improved/create_functions.sql;
    SOURCE /path/to/db_project_improved/create_triggers_views.sql;
+
+   CREATE TABLE access_tokens (
+       id BIGINT AUTO_INCREMENT PRIMARY KEY,
+       user_id INT NOT NULL,
+       token VARCHAR(255) UNIQUE NOT NULL,
+       expiry DATETIME NOT NULL,
+       FOREIGN KEY (user_id) REFERENCES User(id)
+   );
