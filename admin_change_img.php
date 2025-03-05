@@ -12,7 +12,7 @@ $status = "failed";
 $message = "";
 if (Logic_Function::isFound($_SERVER["HTTP_AUTHORIZATION"])) {
     $token = $_SERVER["HTTP_AUTHORIZATION"];
-    if(Access_Token::isValidTokenSyntax($token)){
+    if(Access_Token::isAliveToken($token)){
         if (User::isRealAdmin($token)){
             // User::getAllMembers($respone, $status, $message );
             
