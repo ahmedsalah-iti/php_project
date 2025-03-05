@@ -9,10 +9,10 @@
             <ul class="navbar-nav me-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-plus-circle"></i> Orders
+                        <i class="fas fa-plus-circle"></i> Order
                     </a>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" id="make-new-order-btn" href="#">Make New Order</a></li>
+                        <li><a class="dropdown-item" id="make-new-order-btn" href="./products">Make New Order</a></li>
                         <li><a class="dropdown-item" id="my-orders-btn" href="#">My Orders</a></li>
                         <li><a class="dropdown-item" id="history-btn" href="#">History</a></li>
                     </ul>
@@ -24,7 +24,7 @@
                     if (isset($_GET['action']) && $_GET['action'] === 'admin'):
                 ?>
                 <li class="nav-item" id="admin-nav" style="display: none;">
-                    <a class="nav-link" href="./index.php?action=dashboard"><i class="fas fa-tachometer-alt"></i>Customer Page</a>
+                    <a class="nav-link" href="./index.php?action=dashboard"><i class="fas fa-tachometer-alt"></i> Customer Page</a>
                 </li>
                 <?php
                     else:

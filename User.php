@@ -228,7 +228,7 @@
                     $res = __PDO__->pdo_query("select * from access_tokens , User where token = '$token' and user_id = User.id",false);
 
                      if(!empty($res)){
-                        if (Logic_Function::isExpired($res["expiry"])){
+                        // if (Logic_Function::isExpired($res["expiry"])){
                             unset($res['password']);
                             $getRoomName = Room::getRoomNameByRoomId($res['room_id']);
                             $res['room_name'] = $getRoomName;
@@ -241,9 +241,9 @@
                             $userBalance = User::getBalanceById($res['id']);
                             $res['balance'] = $userBalance;
                             return $res;
-                        }else{
-                            return [];
-                        }
+                        // }else{
+                            // return [];
+                        // }
                     }else{
                         return [];
                     }

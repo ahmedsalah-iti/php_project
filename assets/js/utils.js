@@ -87,7 +87,7 @@ function redirectIfNotLoggedIn() {
 // Setup Navbar Interactions
 function setupNavbarInteractions(exclude = [], customMessages = {}) {
     document.getElementById('logout-btn').addEventListener('click', logout);
-    ['wallet-transactions-btn', 'make-new-order-btn', 'my-orders-btn', 'history-btn'].forEach(id => {
+    ['wallet-transactions-btn', 'my-orders-btn', 'history-btn'].forEach(id => { // Removed 'make-new-order-btn'
         if (!exclude.includes(id)) {
             document.getElementById(id).addEventListener('click', (e) => {
                 e.preventDefault();

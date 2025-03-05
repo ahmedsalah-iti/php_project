@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('token');
     let user = JSON.parse(localStorage.getItem('user'));
     let orderItems = {};
+    let allProducts = []; // Store fetched products for filtering and adding to order
 
     const productsGrid = document.querySelector('.products-grid');
     const orderSummary = document.getElementById('order-summary');
@@ -11,6 +12,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const myRoomRadio = document.getElementById('my-room');
     const chooseRoomRadio = document.getElementById('choose-room');
     const roomSelectDropdown = document.getElementById('room-select-dropdown');
+    const categoryFilter = document.createElement('select');
+
+    // Setup category filter
+    categoryFilter.id = 'category-filter';
+    categoryFilter.innerHTML = '<option value="">All Categories</option>';
+    productsGrid.before(categoryFilter);
 
     // Handle Room Selection
     function handleRoomSelection() {
@@ -30,7 +37,10 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchRooms() {
         disableButtons(true);
         try {
-            const response = await fetch('./getRooms.php', { method: 'GET' });
+            const response = await fetch('./getRooms.php', { 
+                method: 'GET',
+                headers: { 'Authorization': token }
+            });
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const data = await response.json();
             if (data.status === 'success' && Array.isArray(data.data)) {
@@ -60,23 +70,46 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Fetch Products (Mock for now)
+    // Fetch Categories
+    async function fetchCategories() {
+        try {
+            const response = await fetch('./getCategories.php', {
+                method: 'GET',
+                headers: { 'Authorization': token }
+            });
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const data = await response.json();
+            if (data.status === 'success' && Array.isArray(data.all_categories_data)) {
+                data.all_categories_data.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    categoryFilter.appendChild(option);
+                });
+            } else {
+                showNotification('notifications-container', 'Failed to fetch categories.', 'danger');
+            }
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+            showNotification('notifications-container', 'Error fetching categories.', 'danger');
+        }
+    }
+
+    // Fetch Products
     async function fetchProducts() {
         disableButtons(true);
         try {
-            const response = await new Promise(resolve => setTimeout(() => resolve({
-                status: 'success',
-                data: [
-                    { id: 1, name: 'Coffee Latte', price: 15.00, image: 'https://picsum.photos/150/150?random=1' },
-                    { id: 2, name: 'Green Tea', price: 10.00, image: 'https://picsum.photos/150/150?random=2' },
-                    { id: 3, name: 'Chocolate Smoothie', price: 20.00, image: 'https://picsum.photos/150/150?random=3' },
-                    { id: 4, name: 'Iced Coffee', price: 12.00, image: 'https://picsum.photos/150/150?random=4' },
-                ]
-            }), 1000));
-            if (response.status === 'success') {
-                renderProducts(response.data);
+            const response = await fetch('./getProducts.php', {
+                method: 'GET',
+                headers: { 'Authorization': token }
+            });
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const data = await response.json();
+            if (data.status === 'success' && Array.isArray(data.all_products_data)) {
+                allProducts = data.all_products_data; // Store all products
+                renderProducts(allProducts); // Render initially with all products
             } else {
-                showNotification('notifications-container', 'Failed to fetch products.', 'danger');
+                showNotification('notifications-container', data.message || 'Failed to fetch products.', 'danger');
             }
         } catch (error) {
             console.error('Error fetching products:', error);
@@ -91,28 +124,31 @@ document.addEventListener('DOMContentLoaded', () => {
         products.forEach(product => {
             const card = document.createElement('div');
             card.className = 'product-card';
+            const imageSrc = product.product_img ? product.product_img : './uploads/default_product.jpg';
             card.innerHTML = `
-                <img src="${product.image}" alt="${product.name}">
+                <img src="${imageSrc}" alt="${product.name}">
                 <h3>${product.name}</h3>
-                <p class="price">${product.price.toFixed(2)} L.E</p>
+                <p class="price">${parseFloat(product.price).toFixed(2)} L.E</p>
                 <button class="btn-add" onclick="addToOrder(${product.id})"><i class="fas fa-plus"></i></button>
             `;
             productsGrid.appendChild(card);
         });
     }
 
+    // Category Filter Event
+    categoryFilter.addEventListener('change', (e) => {
+        const categoryId = e.target.value;
+        const filteredProducts = categoryId 
+            ? allProducts.filter(product => product.category_id === parseInt(categoryId))
+            : allProducts;
+        renderProducts(filteredProducts);
+    });
+
     // Add to Order
     window.addToOrder = function(productId) {
         disableButtons(true);
         try {
-            const products = [
-                { id: 1, name: 'Coffee Latte', price: 15.00 },
-                { id: 2, name: 'Green Tea', price: 10.00 },
-                { id: 3, name: 'Chocolate Smoothie', price: 20.00 },
-                { id: 4, name: 'Iced Coffee', price: 12.00 },
-                { id: 9, name: 'Milkshake', price: 18.00 }
-            ];
-            const product = products.find(p => p.id === productId);
+            const product = allProducts.find(p => p.id === productId);
             if (product) {
                 orderItems[product.id] = orderItems[product.id] || { ...product, quantity: 0 };
                 orderItems[product.id].quantity += 1;
@@ -142,7 +178,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'order-item';
             itemDiv.innerHTML = `
-                <span class="item-details">${item.name} - ${item.price.toFixed(2)} L.E × ${item.quantity} = ${itemTotal.toFixed(2)} L.E</span>
+                <span class="item-details">${item.name} - ${parseFloat(item.price).toFixed(2)} L.E × ${item.quantity} = ${itemTotal.toFixed(2)} L.E</span>
                 <div class="quantity-controls">
                     <button class="quantity-btn" onclick="decreaseQuantity(${item.id})"><i class="fas fa-minus"></i></button>
                     <span>${item.quantity}</span>
@@ -183,7 +219,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Place Order
+    // Place Order (Placeholder)
     window.placeOrder = async function() {
         disableButtons(true);
         try {
@@ -236,5 +272,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('user', JSON.stringify(user));
         updateUserUI(user, { roomLabelId: 'my-room-label' });
     }, logout), 60000);
+    fetchCategories();
     fetchProducts();
 });

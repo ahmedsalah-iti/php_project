@@ -1,13 +1,9 @@
 <!-- content_parts/products_orders_content.php -->
 <div class="products-container">
     <h1><i class="fas fa-coffee"></i> Products</h1>
+    <!-- Category filter added dynamically by JS -->
     <div class="products-grid" id="products-grid">
-        <div class="product-card">
-            <img src="https://picsum.photos/150/150?random=9" alt="Milkshake">
-            <h3>Milkshake</h3>
-            <p class="price">18.00 L.E</p>
-            <button class="btn-add" onclick="addToOrder(9)"><i class="fas fa-plus"></i></button>
-        </div>
+        <!-- Products populated dynamically by JS -->
     </div>
 </div>
 
@@ -28,7 +24,7 @@
                     <label for="choose-room">Choose Another Room</label>
                 </div>
             </div>
-            <select id="room-select-dropdown" required>
+            <select id="room-select-dropdown" required style="display: none;">
                 <option value="">Select a room</option>
             </select>
         </div>
