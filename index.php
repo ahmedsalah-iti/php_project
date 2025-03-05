@@ -37,7 +37,13 @@ $pageMap = [
         'content' => 'change_password_content.php',
         'js' => 'change_password.js',
         'header' => 'navbar.php'
-    ]
+    ],
+    'admin' => [
+        'title' => 'Admin Panel',
+        'content' => 'admin_content.php',
+        'js' => 'admin.js',
+        'header' => 'navbar.php'
+        ]
 ];
 
 $pageData = isset($pageMap[$action]) ? $pageMap[$action] : $pageMap['login'];

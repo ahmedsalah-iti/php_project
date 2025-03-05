@@ -20,9 +20,21 @@
                 <li class="nav-item">
                     <a class="nav-link" id="wallet-transactions-btn" href="#"><i class="fas fa-wallet"></i> Wallet</a>
                 </li>
+                <?php
+                    if (isset($_GET['action']) && $_GET['action'] === 'admin'):
+                ?>
                 <li class="nav-item" id="admin-nav" style="display: none;">
+                    <a class="nav-link" href="./index.php?action=dashboard"><i class="fas fa-tachometer-alt"></i>Customer Page</a>
+                </li>
+                <?php
+                    else:
+                ?>
+                 <li class="nav-item" id="admin-nav" style="display: none;">
                     <a class="nav-link" href="./index.php?action=admin"><i class="fas fa-tools"></i> Admin Panel</a>
                 </li>
+                <?php
+                    endif;
+                ?>
             </ul>
             <div class="profile-section">
                 <span class="balance-display"><i class="fas fa-wallet"></i> <span id="user-balance-nav">Loading...</span></span>

@@ -2,7 +2,7 @@ RewriteEngine On
 
 RewriteCond %{QUERY_STRING} ^action=([^&]+)$ [NC]
 RewriteCond %{QUERY_STRING} !loop=off [NC]  # Prevents infinite loop
-RewriteRule ^index\.php$ /%1? [R=301,L]
+RewriteRule ^index\.php$ /%1? [R=302,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
