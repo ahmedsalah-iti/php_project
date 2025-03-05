@@ -91,7 +91,9 @@
     }
     public static function getAllProducts(){
         try{
-            $Products = __PDO__->pdo_select('Products');
+            // $Products = __PDO__->pdo_select('Product');
+            $Products = __PDO__->pdo_query('select Product.*,Category.name as category_name from Product , Category where Product.category_id = Category.id');
+
             if (count($Products) > 0){
                 return $Products;
             }else{

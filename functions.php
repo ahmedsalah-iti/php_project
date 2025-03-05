@@ -162,15 +162,12 @@
             }
         }
         static public function isExpired($expiryDate) {
-            $expiryDate = $expiry = new DateTime($expiryDate);
+            $expiryDate = new DateTime($expiryDate);
             $now = new DateTime();
-            $left = $now->diff($expiryDate);
-            if ($left->invert == 0) {
-                return true;
-            }else{
-                false;
-            }
+        
+            return $expiryDate < $now;
         }
+        
         static public function uploadImg($imgFile,&$newImgPath,&$oldImgPath){
             $newImgPath = false;
             

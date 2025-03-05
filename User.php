@@ -221,7 +221,7 @@
         static public function loginWithToken($token){
             $token = str_replace("Bearer ","",$token);
             try{
-                if (Access_Token::isValidTokenSyntax($token)){
+                if (Access_Token::isAliveToken($token)){
                     // $res = __PDO__->pdo_select("access_tokens , User",array(
                     //     "token" => $token
                     // ),false);

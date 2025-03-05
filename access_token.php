@@ -65,6 +65,27 @@
                 return true;
             }
         }
+        public static function isAliveToken($token){
+            if (!static::isValidTokenSyntax($token)){
+                return false;
+            }
+         try{
 
+             $res = __PDO__->pdo_query("select * from access_tokens , User where token = '$token' and user_id = User.id",false);
+             
+             if(!empty($res)){
+                 if (Logic_Function::isExpired($res["expiry"])){
+                    return false;
+                 }else{
+                    return true;
+                 }
+                }else{
+                    return false;
+                }
+                }catch(PDOException $e){
+                    return false;
+                }
+        
+            }
 
     }
