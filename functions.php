@@ -146,6 +146,21 @@
             json_decode($string);
             return json_last_error() === JSON_ERROR_NONE;
         }
+        static public function isValidPrice($price) {
+            if (static::isFound($price)) {
+                if (is_numeric($price)) {
+                    if ($price < 0) {
+                        return true;
+                    }else{
+                        return false;
+                    }
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }
         static public function isExpired($expiryDate) {
             $expiryDate = $expiry = new DateTime($expiryDate);
             $now = new DateTime();

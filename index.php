@@ -13,8 +13,8 @@ $pageMap = [
         'js' => 'register.js',
         'header' => 'header.php'
     ],
-    'products_orders' => [
-        'title' => 'Products & Orders',
+    'products' => [
+        'title' => 'Products',
         'content' => 'products_orders_content.php',
         'js' => 'products_orders.js',
         'header' => 'navbar.php',
