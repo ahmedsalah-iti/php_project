@@ -15,15 +15,83 @@ mysql> describe Payment;
 mysql> 
 
 */
-class Payment{
+
+ini_set('display_errors', '1');
+ini_set('display_startup_errors', '1');
+error_reporting(E_ALL);
+require_once('database.php');
+
+class Payment {
     private $id;
     private $order_id;
     private $method;
     private $status;
     private $date;
 
-    public function __construct($order_id, $method, $status = 'pending'){
-        
+    public function __construct($order_id, $method, $status = 'pending') {
+        $this->order_id = $order_id;
+        $this->method = $method;
+        $this->status = $status;
+    }
+
+    public function save() {
+            $data = [
+                'order_id' => $this->order_id,
+                'method' => $this->method,
+                'status' => $this->status
+            ];
+            $this->id = __PDO__->pdo_insert('Payment', $data);
+            return $this->id;
+    }
+
+    public function update() {
+        $data = [
+            'status' => $this->status,
+            'method' => $this->method
+        ];
+        return __PDO__->pdo_update('Payment', $data, ['id' => $this->id]);
+    }
+
+    public function delete() {
+        return __PDO__->pdo_delete('Payment', ['id' => $this->id]);
+    }
+
+    public static function findById($id) {
+        $result = __PDO__->pdo_select('Payment', ['id' => $id]);
+        return !empty($result) ? self::createFromArray($result[0]) : 'null';
+    }
+
+    public static function findByOrder($order_id) {
+        $results = __PDO__->pdo_select('Payment', ['order_id' => $order_id]);
+        return array_map([self::class, 'createFromArray'], $results);
+    }
+
+    private static function createFromArray($data) {
+        $payment = new self(
+            $data['order_id'],
+            $data['method'],
+            $data['status']
+        );
+        $payment->id = $data['id'];
+        $payment->date = $data['date'];
+        return $payment;
+    }
+
+    public function getId() { return $this->id; }
+    public function getOrderId() { return $this->order_id; }
+    public function getMethod() { return $this->method; }
+    public function getStatus() { return $this->status; }
+    public function getDate() { return $this->date; }
+
+    public function setStatus($status) {
+        $this->status = $status;
+        return $this;
+    }
+
+    public function setMethod($method) {
+        $this->method = $method;
+        return $this;
     }
 };
+
 ?>

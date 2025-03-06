@@ -148,7 +148,7 @@
 
     }
 
-    $db_cfg = new DB_CFG("localhost","cafeteria","php_tester","123");
+    $db_cfg = new DB_CFG("35.157.233.91","cafeteria","php_tester","123");
     $db = new Database($db_cfg);
     define('__PDO__',$db);
     /*
