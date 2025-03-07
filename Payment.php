@@ -20,7 +20,7 @@ ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 require_once('database.php');
-
+require_once('User.php');
 class Payment {
     private $id;
     private $order_id;
@@ -34,7 +34,8 @@ class Payment {
         $this->status = $status;
     }
 
-    public function save() {
+    public function save($User_id) {
+        if(User::getBalanceById($User_id) > 0){
             $data = [
                 'order_id' => $this->order_id,
                 'method' => $this->method,
@@ -42,14 +43,25 @@ class Payment {
             ];
             $this->id = __PDO__->pdo_insert('Payment', $data);
             return $this->id;
+        } 
+        else {
+            return 'Insufficient balance';
+        }
+
     }
 
     public function update() {
-        $data = [
-            'status' => $this->status,
-            'method' => $this->method
-        ];
-        return __PDO__->pdo_update('Payment', $data, ['id' => $this->id]);
+        if(User::getBalanceById($User_id) > 0){
+            $data = [
+                'status' => $this->status,
+                'method' => $this->method
+            ];
+            return __PDO__->pdo_update('Payment', $data, ['id' => $this->id]);
+        }
+        else {
+            return 'Insufficient balance';
+        }
+
     }
 
     public function delete() {
@@ -93,5 +105,6 @@ class Payment {
         return $this;
     }
 };
+$test = new Payment(1, 'cash');
 
 ?>
