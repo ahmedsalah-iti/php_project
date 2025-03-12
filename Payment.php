@@ -5,10 +5,10 @@ mysql> describe Payment;
 | Field    | Type                                 | Null | Key | Default           | Extra             |
 +----------+--------------------------------------+------+-----+-------------------+-------------------+
 | id       | int                                  | NO   | PRI | NULL              | auto_increment    |
-| date     | datetime                             | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
-| status   | enum('pending','completed','failed') | NO   |     | pending           |                   |
-| method   | enum('cash','delivery','online')     | NO   |     | NULL              |                   |
 | order_id | int                                  | NO   | MUL | NULL              |                   |
+| method   | enum('cash','delivery','online')     | NO   |     | NULL              |                   |
+| status   | enum('pending','completed','failed') | NO   |     | pending           |                   |
+| date     | datetime                             | YES  |     | CURRENT_TIMESTAMP | DEFAULT_GENERATED |
 +----------+--------------------------------------+------+-----+-------------------+-------------------+
 5 rows in set (0.00 sec)
 
@@ -32,62 +32,176 @@ class Payment {
         $this->order_id = $order_id;
         $this->method = $method;
         $this->status = $status;
+        $this->Create();
     }
 
-    public function save($User_id) {
-        if(User::getBalanceById($User_id) > 0){
-            $data = [
-                'order_id' => $this->order_id,
-                'method' => $this->method,
-                'status' => $this->status
-            ];
-            $this->id = __PDO__->pdo_insert('Payment', $data);
-            return $this->id;
-        } 
-        else {
-            return 'Insufficient balance';
+    private function Create() {
+        if ($this->isCreated()){
+            return false;
+        }
+        try{
+
+            if(!Order::isOrderFoundInDB($this->order_id)) {
+                return false;
+            }
+            if(!static::isValidMethod($this->method)) {
+                return false; 
+            }
+            if (!static::isValidStatus($this->status)) {
+                return false;
+            }
+            $PaymentId = __PDO__->pdo_insert('payment',get_object_vars($this));
+            if ($PaymentId > 0){
+                $this->id = $PaymentId;
+            }
+            switch ($this->method) {
+                case 'cash':
+                    $this->Pay();
+                    break;
+                case 'delivery':
+                    /// cash on delivery implementing
+                    break;
+                    /// paying via Visa/Mastercard implementing
+                case 'online':
+                    break;
+            }
+            return true;
+
+        }catch(PDOException $e){
+            return false;
         }
 
+        
     }
-
-    public function update() {
-        if(User::getBalanceById($User_id) > 0){
-            $data = [
-                'status' => $this->status,
-                'method' => $this->method
-            ];
-            return __PDO__->pdo_update('Payment', $data, ['id' => $this->id]);
+    public function isCreated(){
+        if ($this->id && $this->id > 0){
+            return true;
+        }else{
+            return false;
         }
-        else {
-            return 'Insufficient balance';
+    }
+    private static function isValidMethod($method){
+        $validMethods = ['cash', 'delivery', 'online'];
+        if (in_array($method, $validMethods)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    private static function isValidStatus($status){
+        $validStatus = ['pending', 'completed'];
+        if (in_array($status, $validStatus)){
+            return true;
+        }else{
+            return false;
+        }
+    }
+    private function Pay(){
+        try{
+            $orderData = Order::getOrderDataById($this->order_id);
+            $totalPrice = Order::getOrderTotalPrice($this->order_id);
+            if (Logic_Function::isFound($orderData['user_id']) && Logic_Function::isFound($totalPrice) && $totalPrice > 0){
+                $userId = $orderData['user_id'];
+                $Transaction = new Wallet_Transaction($userId,"sub" ,$totalPrice);
+                if ($Transaction->isCreated() && $Transaction->isCompleted()){
+                    if ( $this->updateStatus('completed')){
+                        return true;
+                    }else{
+                        return false;
+                    }
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        }catch(PDOException $e){
+            return false;
+        }
+    }
+    private function updateStatus($status){
+        if ($this->isValidStatus($status) && $this->isCreated()) {
+            $this->status = $status;
+            $update = __PDO__->pdo_update('payment',array(
+                'status'=> $this->status,
+            ),array(
+                'id'=> $this->id
+            ));
+            if ($update > 0){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+
+    public static function isPaymentFoundInDB($id){
+        //return false/true
+        if (!is_numeric($id)){
+            return false;
+        }
+        $order = __PDO__->pdo_select('payment',array(
+            "id" => $id
+        ),false);
+        if ($order && count($order) > 0){//dont forget to add $order && in other classes , bug fixed.
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public static function getPaymentById($id){
+        try{
+     if (static::isPaymentFoundInDB($id)){
+        $Product = __PDO__->pdo_select('payment',array(
+            'id'=> $id
+        ),false);
+        if ($Product && count($Product) > 0){
+            return $Product;
+        }else{
+            return false;
+        }
+     }else{
+        return false;
+     } 
+    }catch(PDOException $e){
+        return false;
+    }
+    }
+
+    public static function getAllPaymentsByOrderId($order_id){
+        try{
+     if (Order::isOrderFoundInDB($order_id)){
+        $Product = __PDO__->pdo_select('payment',array(
+            'order_id'=> $order_id
+        ),true);
+        if ($Product && count($Product) > 0){
+            return $Product;
+        }else{
+            return [];
+        }
+     }else{
+        return [];
+     } 
+    }catch(PDOException $e){
+        return [];
+    }
+    }
+
+    public static function getAllPayments(){
+        try{
+        $Product = __PDO__->pdo_select('payment');
+        if ($Product && count($Product) > 0){
+            return $Product;
+        }else{
+            return [];
         }
 
+    }catch(PDOException $e){
+        return [];
+    }
     }
 
-    public function delete() {
-        return __PDO__->pdo_delete('Payment', ['id' => $this->id]);
-    }
-
-    public static function findById($id) {
-        $result = __PDO__->pdo_select('Payment', ['id' => $id]);
-        return !empty($result) ? self::createFromArray($result[0]) : 'null';
-    }
-
-    public static function findByOrder($order_id) {
-        $results = __PDO__->pdo_select('Payment', ['order_id' => $order_id]);
-        return array_map([self::class, 'createFromArray'], $results);
-    }
-
-    private static function createFromArray($data) {
-        $payment = new self(
-            $data['order_id'],
-            $data['method'],
-            $data['status']
-        );
-        $payment->id = $data['id'];
-        $payment->date = $data['date'];
-        return $payment;
-    }
 
     public function getId() { return $this->id; }
     public function getOrderId() { return $this->order_id; }
@@ -95,16 +209,33 @@ class Payment {
     public function getStatus() { return $this->status; }
     public function getDate() { return $this->date; }
 
-    public function setStatus($status) {
-        $this->status = $status;
-        return $this;
-    }
+
 
     public function setMethod($method) {
-        $this->method = $method;
-        return $this;
+        if ($this->isValidMethod($method)){
+            $this->method = $method;
+            return true;
+        }else{
+            return false;
+        }
+    }
+    public static function isPaymentCompleted($payment_id){
+        if (static::isPaymentFoundInDB($payment_id)){
+            $payment = static::getPaymentById($payment_id);
+            if ($payment){
+                $isCompleted = $payment['status'];
+                if ($isCompleted == 'completed'){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 };
-$test = new Payment(1, 'cash');
 
 ?>
