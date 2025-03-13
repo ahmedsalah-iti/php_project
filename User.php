@@ -10,11 +10,11 @@
         //     [role] => admin
         //     [room_id] => 1
         // )
-        
         // (
         //     [id] => 2
         //     [name] => Conference Room
         // )
+
         class Room{
             static public function getRoomNameByRoomId($id){
                 try{
@@ -176,6 +176,7 @@
                 return false;
             }
         }
+        
         static public function LoginWithEmail($email, $password){
             $email = strtolower(addslashes(htmlspecialchars(trim($email))));
             $password = addslashes(htmlspecialchars(trim($password)));
