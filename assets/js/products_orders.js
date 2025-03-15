@@ -52,11 +52,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     roomSelectDropdown.appendChild(option);
                 });
             } else {
-                showNotification('notifications-container', 'Failed to fetch rooms.', 'danger');
+                showNotification('notifications-container', 'Failed to fetch rooms.', 'danger', 2000);
             }
         } catch (error) {
             console.error('Error fetching rooms:', error);
-            showNotification('notifications-container', 'Error fetching rooms.', 'danger');
+            showNotification('notifications-container', 'Error fetching rooms.', 'danger', 2000);
         } finally {
             disableButtons(false);
         }
@@ -87,11 +87,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     categoryFilter.appendChild(option);
                 });
             } else {
-                showNotification('notifications-container', 'Failed to fetch categories.', 'danger');
+                showNotification('notifications-container', 'Failed to fetch categories.', 'danger', 2000);
             }
         } catch (error) {
             console.error('Error fetching categories:', error);
-            showNotification('notifications-container', 'Error fetching categories.', 'danger');
+            showNotification('notifications-container', 'Error fetching categories.', 'danger', 2000);
         }
     }
 
@@ -109,11 +109,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 allProducts = data.all_products_data; // Store all products
                 renderProducts(allProducts); // Render initially with all products
             } else {
-                showNotification('notifications-container', data.message || 'Failed to fetch products.', 'danger');
+                showNotification('notifications-container', data.message || 'Failed to fetch products.', 'danger', 2000);
             }
         } catch (error) {
             console.error('Error fetching products:', error);
-            showNotification('notifications-container', 'Error fetching products.', 'danger');
+            showNotification('notifications-container', 'Error fetching products.', 'danger', 2000);
         } finally {
             disableButtons(false);
         }
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error adding to order:', error);
-            showNotification('notifications-container', 'Error adding item.', 'danger');
+            showNotification('notifications-container', 'Error adding item.', 'danger', 2000);
         } finally {
             disableButtons(false);
         }
@@ -219,44 +219,95 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Place Order (Placeholder)
+    // Place Order
     window.placeOrder = async function() {
         disableButtons(true);
         try {
             if (Object.keys(orderItems).length === 0) {
-                showNotification('notifications-container', 'No items in your order.', 'danger');
+                showNotification('notifications-container', 'No items in your order.', 'danger', 2000);
                 return;
             }
-            let roomId = myRoomRadio.checked ? user.room_id || '' : roomSelectDropdown.value;
+            let roomId = myRoomRadio.checked ? (parseInt(user.room_id) || 0) : (parseInt(roomSelectDropdown.value) || 0);
             if (!roomId) {
-                showNotification('notifications-container', 'Please select a room.', 'danger');
+                showNotification('notifications-container', 'Please select a room.', 'danger', 2000);
                 return;
             }
             const notes = orderNotes.value;
-            const orderData = { items: orderItems, room_id: roomId, notes, user_id: user.id };
-            const response = await new Promise(resolve => setTimeout(() => resolve({
-                status: 'success',
-                message: 'Order placed successfully!'
-            }), 1000));
-            if (response.status === 'success') {
-                showNotification('notifications-container', response.message, 'success', 2000);
-                orderItems = {};
-                orderNotes.value = '';
-                updateOrderSummary();
+
+            // Prepare order data with one room_id, one note, and a products array
+            const orderData = {
+                room_id: roomId,
+                note: notes,
+                products: Object.values(orderItems).map(item => ({
+                    id: item.id,
+                    quantity: item.quantity
+                }))
+            };
+
+            const response = await fetch('./api/make_order', {
+                method: 'POST',
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+            const data = await response.json();
+
+            if (data.status === 'success') {
+                showNotification('notifications-container', data.message || 'Order placed successfully!', 'success', 2000);
+                // Disable the Place Order button
+                const placeOrderButton = document.querySelector('.btn-place-order');
+                placeOrderButton.disabled = true;
+                // Prepare and execute redirect
+                const redirectUrl = `./orders?order_id=${data.order_id}`;
+                console.log('Redirecting to:', redirectUrl); // Debug log
+                setTimeout(() => {
+                    console.log('Executing redirect now...'); // Debug log
+                    window.location.assign(redirectUrl); // Use assign instead of href
+                }, 2000);
             } else {
-                showNotification('notifications-container', 'Failed to place order.', 'danger');
+                showNotification('notifications-container', data.message || 'Failed to place order.', 'danger', 2000);
             }
         } catch (error) {
             console.error('Error placing order:', error);
-            showNotification('notifications-container', 'Error placing order.', 'danger');
+            showNotification('notifications-container', 'Error placing order.', 'danger', 2000);
         } finally {
             disableButtons(false);
         }
     };
 
+    // Show Notification
+    function showNotification(containerId, message, type, duration = 2000) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const notification = document.createElement('div');
+        notification.className = `notification-item ${type}`;
+        notification.innerHTML = `
+            <span>${message}</span>
+            <button class="notification-close"><i class="fas fa-times"></i></button>
+        `;
+        container.appendChild(notification);
+
+        setTimeout(() => notification.classList.add('visible'), 10);
+
+        const closeBtn = notification.querySelector('.notification-close');
+        closeBtn.addEventListener('click', () => notification.remove());
+
+        setTimeout(() => notification.remove(), duration);
+    }
+
+    // Disable Buttons Helper
+    function disableButtons(state, scope = document) {
+        scope.querySelectorAll('button').forEach(btn => btn.disabled = state);
+    }
+
     // Navbar Interactions
     setupNavbarInteractions(['make-new-order-btn'], { 'make-new-order-btn': 'Make New Order feature already on this page!' });
-    document.getElementById('change-profile-btn').addEventListener('click', (e) => {
+    document.getElementById('change-profile-btn')?.addEventListener('click', (e) => {
         e.preventDefault();
         showNotification('notifications-container', 'Change Profile Picture feature coming soon!', 'info', 2000);
     });
