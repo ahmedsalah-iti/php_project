@@ -89,6 +89,24 @@
         return false;
     }
     }
+    public static function getProductById($id){
+        try{
+     if (static::isProductFoundInDB($id)){
+        $Product = __PDO__->pdo_select('Product',array(
+            'id'=> $id
+        ),false);
+        if ($Product && count($Product) > 0){
+            return $Product;
+        }else{
+            return false;
+        }
+     }else{
+        return false;
+     } 
+    }catch(PDOException $e){
+        return false;
+    }
+    }
     public static function getAllProducts(){
         try{
             // $Products = __PDO__->pdo_select('Product');

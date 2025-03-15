@@ -12,8 +12,8 @@ header("Content-Type: application/json");
 $respone = [];
 $status = "failed";
 $message = "";
-if (Logic_Function::isFound($_SERVER["HTTP_AUTHORIZATION"])) {
-    $token = $_SERVER["HTTP_AUTHORIZATION"];
+if (ClientRequest::getRequestAuth()) {
+    $token = ClientRequest::getRequestAuth();
     if(Access_Token::isAliveToken($token)){
         $Products = Product::getAllProducts();
         if (Logic_Function::isFound($Products) && count($Products) > 0){

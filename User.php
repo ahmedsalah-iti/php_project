@@ -274,9 +274,9 @@
         }
 
         static public function fullTokenLoginCheck(&$respone,&$status,&$message){
-            if ($_SERVER["REQUEST_METHOD"] === "POST") {
-                if (Logic_Function::isFound($_SERVER["HTTP_AUTHORIZATION"])) {
-                    $token = $_SERVER["HTTP_AUTHORIZATION"];
+            if (ClientRequest::getRequestMethod() == "POST") {
+                if (ClientRequest::getRequestAuth()) {
+                    $token = ClientRequest::getRequestAuth();
                     $login = User::loginWithToken($token);
                     if (Logic_Function::isFound($login)) {
                         $status = "success";
@@ -382,8 +382,8 @@
            $status = 'failed';
            $message = '';
             try{
-                if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-                    $rawPostData = file_get_contents("php://input");
+                if (ClientRequest::getRequestMethod() == 'POST'){
+                    $rawPostData = ClientRequest::getRequestData();
                     if(Logic_Function::isValidJson($rawPostData)){
                         $json = json_decode($rawPostData, true);
                         if(Logic_Function::isValidName($json['first_name']) && Logic_Function::isValidName( $json['last_name'])){
@@ -463,8 +463,8 @@
             $status = 'failed';
             $message = '';
             try{
-                if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-                    $rawPostData = file_get_contents("php://input");
+                if (ClientRequest::getRequestMethod()== 'POST'){
+                    $rawPostData = ClientRequest::getRequestData();
                     if(Logic_Function::isValidJson($rawPostData)){
                         $json = json_decode($rawPostData, true);
                         if(Logic_Function::isValidPass($json["new_pass"])){

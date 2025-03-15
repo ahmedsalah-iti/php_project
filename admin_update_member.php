@@ -10,12 +10,12 @@ header("Content-Type: application/json");
 $respone = [];
 $status = "failed";
 $message = "";
-if (Logic_Function::isFound($_SERVER["HTTP_AUTHORIZATION"])) {
-    $token = $_SERVER["HTTP_AUTHORIZATION"];
-    if(Access_Token::isValidTokenSyntax($token)){
+if (ClientRequest::getRequestAuth()) {
+    $token = ClientRequest::getRequestAuth();
+    if(Access_Token::isAliveToken($token)){
         if (User::isRealAdmin($token)){
             // User::getAllMembers($respone, $status, $message );
-        
+            
             // updateUserInfoById
             if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                 $rawPostData = file_get_contents("php://input");
@@ -43,7 +43,6 @@ if (Logic_Function::isFound($_SERVER["HTTP_AUTHORIZATION"])) {
     }else{
         $message = 'invalid access token / unauthorized';
     }
-    
 }else{
     $message = 'unauthorized';
 }

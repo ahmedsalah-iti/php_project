@@ -10,8 +10,8 @@ header('Content-Type: application/json');
 $respone = array();
 $status = 'failed';
 $message = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST'){
-    $rawPostData = file_get_contents("php://input");
+if (ClientRequest::getRequestMethod() === 'POST'){
+    $rawPostData = ClientRequest::getRequestData();
     if(Logic_Function::isValidJson($rawPostData)){
         $json = json_decode($rawPostData, true);
         if(Logic_Function::isFound($json['type'])){
@@ -33,8 +33,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST'){
                     $message = 'missing valid email/pass.';
                 }
             }elseif ($json['type'] === 'token'){
-                if(Logic_Function::isFound($_SERVER['HTTP_AUTHORIZATION'])){
-                    $token = $_SERVER['HTTP_AUTHORIZATION'];
+                if(ClientRequest::getRequestAuth()){
+                    $token = ClientRequest::getRequestAuth();
                     $login = User::loginWithToken(($token));
                     if(Logic_Function::isFound($login) && Logic_Function::isFound($login['id'])){
                         $respone['data'] = $login;
