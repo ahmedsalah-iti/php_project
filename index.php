@@ -1,4 +1,19 @@
 <?php
+    ini_set('display_errors', '1');
+    ini_set('display_startup_errors', '1');
+    error_reporting(E_ALL);
+    
+    require_once "classes/Logic_Function.php";
+    require_once "classes/Database.php";
+$db_cfg = new DB_CFG("35.157.233.91","cafeteria","php_tester","123");
+$db = new Database($db_cfg);
+define('__PDO__',$db);
+    spl_autoload_register(function ($class) {
+        $file = "classes/" . $class .".php";
+        if (file_exists($file) && $class != 'index') {
+            require_once $file;
+        }
+    });
 $action = isset($_GET['action']) ? $_GET['action'] : 'login';
 // if (!isset($_GET['loop']) || $_GET['loop'] != 'off') {
 //     header('location: ./'.$action.'');
@@ -6,6 +21,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : 'login';
 // }else{
 //     // echo 'ssssss.s.s.s.'.$action;
 // }
+
 $pageMap = [
     'register' => [
         'title' => 'Register',
@@ -43,7 +59,19 @@ $pageMap = [
         'content' => 'admin_content.php',
         'js' => 'admin.js',
         'header' => 'navbar.php'
-        ]
+    ],
+    'orders' =>[
+        'title' => 'Orders',
+        'content' => 'my_orders_content.php',
+        'js' => 'order.js',
+        'header' => 'navbar.php'
+    ],
+    'payments' =>[
+        'title' => 'Payments',
+        'content' => 'my_payments_content.php',
+        // 'js' => 'order.js',
+        'header' => 'navbar.php'
+    ],
 ];
 
 $pageData = isset($pageMap[$action]) ? $pageMap[$action] : $pageMap['login'];
