@@ -1,4 +1,5 @@
 <!-- html_parts/navbar.php -->
+<!-- After last update nav-->
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
         <a class="navbar-brand" href="./index.php?action=dashboard"><span class="logo">Cafeteria</span></a>
@@ -13,7 +14,7 @@
                     </a>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" id="make-new-order-btn" href="./products">Make New Order</a></li>
-                        <li><a class="dropdown-item" id="my-orders-btn" href="#">My Orders</a></li>
+                        <li><a class="dropdown-item" id="my-orders-btn" href="orders">My Orders</a></li>
                         <li><a class="dropdown-item" id="history-btn" href="#">History</a></li>
                     </ul>
                 </li>
