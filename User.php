@@ -14,7 +14,7 @@
         //     [id] => 2
         //     [name] => Conference Room
         // )
-
+        require_once('ClientRequest.php');
         class Room{
             static public function getRoomNameByRoomId($id){
                 try{
