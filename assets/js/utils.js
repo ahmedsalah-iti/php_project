@@ -35,7 +35,7 @@ function disableButtons(disable = true, selector = '.btn-primary, .btn-action, .
 async function checkAuth(token, callbackSuccess, callbackFailure) {
     disableButtons(true);
     try {
-        const response = await fetch('./login.php', {
+        const response = await fetch('./api/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

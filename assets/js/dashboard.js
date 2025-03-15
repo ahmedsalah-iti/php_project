@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const formData = new FormData();
                 formData.append('profile_img', file);
-                const response = await fetch('./upload.php', {
+                const response = await fetch('./api/upload', {
                     method: 'POST',
                     headers: { 'AUTHORIZATION': token },
                     body: formData

@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchRooms() {
         disableButtons(true);
         try {
-            const response = await fetch('./getRooms.php', { method: 'GET' });
+            const response = await fetch('./api/get_rooms', { method: 'GET' });
             if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const data = await response.json();
             if (data.status === 'success' && Array.isArray(data.data)) {
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = { first_name: firstName, last_name: lastName, email, password, phone, room_id: roomId };
 
         try {
-            const response = await fetch('./register.php', {
+            const response = await fetch('./api/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = { email, pass: password, type: 'email' };
 
         try {
-            const response = await fetch('./login.php', {
+            const response = await fetch('./api/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data)

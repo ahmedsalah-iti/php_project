@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchRooms() {
         disableButtons(true);
         try {
-            const response = await fetch('./getRooms.php', {
+            const response = await fetch('./api/get_rooms', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchMembers() {
         disableButtons(true);
         try {
-            const response = await fetch('./getMembers.php', {
+            const response = await fetch('./api/admin/get_members', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const data = await response.json();
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         formData.append('profile_img', file);
         formData.append('id', userId);
 
-        const response = await fetch('./admin_change_img.php', {
+        const response = await fetch('./api/admin/change_img', {
             method: 'POST',
             headers: { 'Authorization': `Bearer ${token}` },
             body: formData,
@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const response = await fetch('./admin_update_member.php', {
+            const response = await fetch('./api/admin/update_member', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -201,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const response = await fetch('./deleteMember.php', {
+            const response = await fetch('./api/admin/delete_member', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = Object.fromEntries(formData.entries());
 
         try {
-            const response = await fetch('./register.php', {
+            const response = await fetch('./api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -288,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const formData = new FormData();
                 formData.append('profile_img', file);
-                const response = await fetch('./upload.php', {
+                const response = await fetch('./api/upload', {
                     method: 'POST',
                     headers: { 'AUTHORIZATION': token },
                     body: formData

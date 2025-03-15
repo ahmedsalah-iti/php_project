@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchRooms() {
         disableButtons(true);
         try {
-            const response = await fetch('./getRooms.php', { 
+            const response = await fetch('./api/get_rooms', { 
                 method: 'GET',
                 headers: { 'Authorization': token }
             });
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fetch Categories
     async function fetchCategories() {
         try {
-            const response = await fetch('./getCategories.php', {
+            const response = await fetch('./api/get_categories', {
                 method: 'GET',
                 headers: { 'Authorization': token }
             });
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function fetchProducts() {
         disableButtons(true);
         try {
-            const response = await fetch('./getProducts.php', {
+            const response = await fetch('./api/get_products', {
                 method: 'GET',
                 headers: { 'Authorization': token }
             });

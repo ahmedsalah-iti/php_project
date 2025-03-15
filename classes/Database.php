@@ -148,16 +148,5 @@
 
     }
 
-    $db_cfg = new DB_CFG("35.157.233.91","cafeteria","php_tester","123");
-    $db = new Database($db_cfg);
-    define('__PDO__',$db);
-    /*
-    CREATE TABLE access_tokens (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    token VARCHAR(255) UNIQUE NOT NULL,
-    expiry DATETIME NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES User(id)
-    );
-    */
+
 ?>

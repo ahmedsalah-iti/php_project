@@ -1,0 +1,6 @@
+RewriteEngine On
+
+# Ensure index.php handles all requests
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php?endpoint=$1 [QSA,L]

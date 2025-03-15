@@ -1,18 +1,4 @@
 <?php
-ini_set("display_errors", "1");
-ini_set("display_startup_errors", "1");
-error_reporting(E_ALL);
-require_once "database.php";
-require_once "functions.php";
-require_once "User.php";
-require_once "access_token.php";
-require_once "Category.php";
-require_once "Product.php";
-require_once('ClientRequest.php');
-header("Content-Type: application/json");
-$respone = [];
-$status = "failed";
-$message = "";
 if (ClientRequest::getRequestAuth()) {
     $token = ClientRequest::getRequestAuth();
     if(Access_Token::isAliveToken($token)){
@@ -36,8 +22,6 @@ if (ClientRequest::getRequestAuth()) {
 
 
 
-$respone['message'] = $message;
 $respone['status'] = $status;
-sleep(seconds: 1);
-echo json_encode($respone ,JSON_PRETTY_PRINT);
+$respone['message'] = $message;
 ?>

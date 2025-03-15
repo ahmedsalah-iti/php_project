@@ -1,16 +1,4 @@
 <?php
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
-require_once('database.php');
-require_once('User.php');
-require_once('access_token.php');
-require_once('functions.php');
-require_once('ClientRequest.php');
-header('Content-Type: application/json');
-$respone = array();
-$status = 'failed';
-$message = '';
 if (ClientRequest::getRequestMethod() === 'POST'){
     $rawPostData = ClientRequest::getRequestData();
     if(Logic_Function::isValidJson($rawPostData)){
@@ -61,8 +49,6 @@ if (ClientRequest::getRequestMethod() === 'POST'){
     $status = 'failed';
     $message = 'BAD REQUEST METHOD';
 }
-$respone['message'] = $message;
 $respone['status'] = $status;
-sleep(seconds: 1);
-echo json_encode($respone ,JSON_PRETTY_PRINT);
+$respone['message'] = $message;
 ?>

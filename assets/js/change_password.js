@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const data = { current_pass: currentPassword, new_pass: newPassword };
 
         try {
-            const response = await fetch('./change_pass.php', {
+            const response = await fetch('./api/change_pass', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

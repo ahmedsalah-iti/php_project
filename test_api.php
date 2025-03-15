@@ -11,7 +11,6 @@
     require_once('Order.php');
     require_once('Order_Product.php');
     require_once('Wallet_Transaction.php');
-    require_once('ClientRequest.php');
     echo '<pre>';
     print_r(Category::getAllCategories());
     echo '</pre>';

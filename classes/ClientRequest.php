@@ -27,5 +27,23 @@
                 return file_get_contents("php://input");
             }
         }
+        public static function getRequestURI(){
+            return explode("/", trim($_SERVER['REQUEST_URI'], "/"));
+        }
+        public static function getRequestEndPoint(){
+            $RequestURI = static::getRequestURI();
+            if (Logic_Function::isFound($RequestURI[0]) && $RequestURI[0] == 'api') {
+                if (Logic_Function::isFound($RequestURI[1]) && $RequestURI[1] == 'admin') {
+                    if (Logic_Function::isFound($RequestURI[2])) {
+                        return 'admin/'.$RequestURI[2];
+                    }
+                }else{
+                    return $RequestURI[1];
+                }
+            }else{
+                return null;
+            }
+        }
+        
     }
 ?>
