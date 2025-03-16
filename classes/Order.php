@@ -99,6 +99,10 @@ mysql> describe `Order`;
             'id'=> $id
         ),false);
         if (Logic_Function::isFound($order)){
+            $orderItems = Order::getOrderItems(intval($id));
+            $orderTotalPrice = Order::getOrderTotalPrice(intval($id));
+            $order['total_price'] = floatval($orderTotalPrice);
+            $order['items'] = $orderItems;
             return $order;
         }else{
             return false;
@@ -194,12 +198,44 @@ mysql> describe `Order`;
                 'user_id'=>$user_id
             ));
             if ($orders && count($orders) > 0){
+                //adding total price for each order , but removed duo to too much delay.
+                // $updated_orders = array();
+                // foreach ($orders as $order){
+                    // if ($order['status'] == 'pending'){
+                    // $orderTotalPrice = floatval(Order::getOrderTotalPrice($order['id']));
+                    // $order['total_price'] = $orderTotalPrice;
+                    // }
+                    // $updated_orders[] = $order;
+                // }
+                // return $updated_orders;
                 return $orders;
             }else{
                 return [];
             }
         }catch(PDOException $e){
             return [];
+        }
+    }
+    public function getId(){
+        return $this->id;
+    }
+    
+
+    public static function isOrderCompleted($order_id){
+        if (static::isOrderFoundInDB($order_id)){
+            $order = static::getOrderDataById($order_id);
+            if ($order){
+                $isCompleted = $order['status'];
+                if ($isCompleted == 'completed'){
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
+                return false;
+            }
+        }else{
+            return false;
         }
     }
 };
