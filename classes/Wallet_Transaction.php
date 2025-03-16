@@ -44,7 +44,7 @@ class Wallet_Transaction{
             if ($this->type === "add"){
                 $walletTransaction = __PDO__->pdo_query("select addUserBalance($this->user_id,$this->amount) as tid",false);
             }elseif ($this->type === "sub"){
-                $walletTransaction = __PDO__->pdo_query("select addUserBalance($this->user_id,$this->amount) as tid",false);
+                $walletTransaction = __PDO__->pdo_query("select subUserBalance($this->user_id,$this->amount) as tid",false);
             }
             if ($walletTransaction && count($walletTransaction) > 0 && Logic_Function::isFound($walletTransaction["tid"]) && $walletTransaction["tid"] > 0){
                 $tid= $walletTransaction["tid"];
