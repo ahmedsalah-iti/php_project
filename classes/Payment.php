@@ -44,6 +44,9 @@ class Payment {
             if(!Order::isOrderFoundInDB($this->order_id)) {
                 return false;
             }
+            if (Order::isOrderCompleted($this->order_id)) {
+                return false;
+            }
             if(!static::isValidMethod($this->method)) {
                 return false; 
             }
@@ -54,17 +57,7 @@ class Payment {
             if ($PaymentId > 0){
                 $this->id = $PaymentId;
             }
-            switch ($this->method) {
-                case 'cash':
-                    $this->Pay();
-                    break;
-                case 'delivery':
-                    /// cash on delivery implementing
-                    break;
-                    /// paying via Visa/Mastercard implementing
-                case 'online':
-                    break;
-            }
+            $this->Pay();
             return true;
 
         }catch(PDOException $e){
@@ -80,7 +73,7 @@ class Payment {
             return false;
         }
     }
-    private static function isValidMethod($method){
+    public static function isValidMethod($method){
         $validMethods = ['cash', 'delivery', 'online'];
         if (in_array($method, $validMethods)){
             return true;
@@ -89,7 +82,7 @@ class Payment {
         }
     }
     private static function isValidStatus($status){
-        $validStatus = ['pending', 'completed'];
+        $validStatus = ['pending', 'completed','failed'];
         if (in_array($status, $validStatus)){
             return true;
         }else{
@@ -99,20 +92,42 @@ class Payment {
     private function Pay(){
         try{
             $orderData = Order::getOrderDataById($this->order_id);
-            $totalPrice = Order::getOrderTotalPrice($this->order_id);
+            // $totalPrice = Order::getOrderTotalPrice($this->order_id);
+            $totalPrice = floatval($orderData['total_price']);
             if (Logic_Function::isFound($orderData['user_id']) && Logic_Function::isFound($totalPrice) && $totalPrice > 0){
                 $userId = $orderData['user_id'];
-                $Transaction = new Wallet_Transaction($userId,"sub" ,$totalPrice);
-                if ($Transaction->isCreated() && $Transaction->isCompleted()){
-                    if ( $this->updateStatus('completed')){
-                        return true;
-                    }else{
+                switch ($this->method){
+                    case 'cash':
+                        $Transaction = new Wallet_Transaction($userId,"sub" ,$totalPrice);
+                        if ($Transaction->isCreated() && $Transaction->isCompleted()){
+                            $this->updateStatus('completed');
+                            Order::setStatus($this->order_id, 'completed');
+                            return true;
+                        }else{
+                            $this->updateStatus('failed');
+                            return false;
+                        }
+                        break;
+                    case 'delivery':
+                        $user_balance = User::getBalanceById($userId);
+                        if ($user_balance >= $totalPrice){
+                            $this->updateStatus('failed');
+                            return false;
+                        }else{
+                            $this->updateStatus('completed');//payment completed but the admin has to confirm manually.
+                            return true;
+                        }
+                        break;
+                    case 'online':
+                        $this->updateStatus('failed');
                         return false;
-                    }
-                    return true;
-                }else{
-                    return false;
+                        break;
                 }
+
+
+
+
+
             }
         }catch(PDOException $e){
             return false;
@@ -236,6 +251,22 @@ class Payment {
             return false;
         }
     }
+
+    public function isCompleted(){
+        if ($this->isCreated()){
+                $isCompleted = $this->getStatus();
+                if ($isCompleted == 'completed'){
+                    return true;
+                }else{
+                    return false;
+                }
+           
+        }else{
+            return false;
+        }
+    }
+
+
 };
 
 ?>
