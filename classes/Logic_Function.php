@@ -11,6 +11,9 @@
                 return false;
             }
         }
+        static public function isValidId($id) {
+            return Logic_Function::isFound($id) && filter_var($id, FILTER_VALIDATE_INT) !== false && (int)$id > 0;
+        }
         static public function isValidPhone(&$phone) {
             if(static::isFound($phone)) {
                 $pattern = '/^(010|011|012|015)\d{8}$/';
