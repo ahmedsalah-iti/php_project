@@ -25,6 +25,11 @@
     $RequestMethod = ClientRequest::getRequestMethod();
     $RequestEndPoint = ClientRequest::getRequestEndPoint();
     $ApiFiles = [
+        "admin/add_category" => "admin_add_category.php",
+        "admin/add_product" => "admin_add_product.php",
+        "admin/change_img" => "admin_change_img.php",
+        "admin/update_member" => "admin_update_member.php",
+        "admin/get_members" => "admin_get_members.php",
         "get_products" => "getProducts.php",
         "get_categories" => "getCategories.php",
         "get_rooms" => "getRooms.php",
@@ -32,11 +37,9 @@
         "register" => "register.php",
         "upload" => "upload.php",
         "change_pass" => "change_pass.php",
-        "admin/add_category" => "admin_add_category.php",
-        "admin/add_product" => "admin_add_product.php",
-        "admin/change_img" => "admin_change_img.php",
-        "admin/update_member" => "admin_update_member.php",
-        "admin/get_members" => "admin_get_members.php",
+        "make_order" => "make_order.php",
+        "get_order" => "getOrders.php",
+        "pay" => "PayOrder.php",
     ];
 
     if ($RequestEndPoint && isset($ApiFiles[$RequestEndPoint])) {
