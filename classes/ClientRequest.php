@@ -44,6 +44,19 @@
                 return null;
             }
         }
-        
+        public static function isPostRequest(){
+            if (static::getRequestMethod() == 'POST') {
+                return true;
+            }else{
+                return false;
+            }
+        }
+        public static function isGetRequest(){
+            if (static::getRequestMethod() == 'GET') {
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
 ?>
