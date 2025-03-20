@@ -16,11 +16,11 @@ mysql>
 
 */
 
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
-require_once('database.php');
-require_once('User.php');
+// ini_set('display_errors', '1');
+// ini_set('display_startup_errors', '1');
+// error_reporting(E_ALL);
+// require_once('Database.php');
+// require_once('User.php');
 class Payment {
     private $id;
     private $order_id;
@@ -32,6 +32,7 @@ class Payment {
         $this->order_id = $order_id;
         $this->method = $method;
         $this->status = $status;
+        $this->date = date('Y-m-d H:i:s');//because we forgot to add NOTE NULL in date attribute in `Order` Table.
         $this->Create();
     }
 
@@ -152,14 +153,16 @@ class Payment {
     }
 
     public static function isPaymentFoundInDB($id){
-        //return false/true
+        // <THERE IS A BUG , WE WILL FIX IT LATER.
+        //return false/true 
         if (!is_numeric($id)){
             return false;
         }
-        $order = __PDO__->pdo_select('payment',array(
+        $payment = __PDO__->pdo_select('payment',array(
             "id" => $id
         ),false);
-        if ($order && count($order) > 0){//dont forget to add $order && in other classes , bug fixed.
+        // print_r($payment);
+        if ($payment && count($payment) > 0){//dont forget to add $order && in other classes , bug fixed.
             return true;
         }else{
             return false;
@@ -265,8 +268,53 @@ class Payment {
             return false;
         }
     }
+    
+    public static function isUserHasAccessToPayment($payment_id,$user_id){
+        try{
+            if (!static::isPaymentFoundInDB($payment_id)){
+                return false;
+            }
+            if (!User::isUserIdFoundDB($user_id)){
+                return false;
+            }
+            $payment = Payment::getPaymentById($payment_id);
+            $order_id = $payment['order_id'];
+            $hasAccess = __PDO__->pdo_query("select `order`.user_id from `order`,payment where 
+            payment.order_id = $order_id",false);
+            if (Logic_Function::isFound($hasAccess)){
+                return true;
+            }else{
+                return false;
+            }
 
 
+
+
+
+            
+        }catch(PDOException $e){
+            return false;
+        }
+    }
+    public static function getAllPaymentsByUserId($user_id){
+        if (!User::isUserIdFoundDB($user_id)){
+            return false;
+        }
+            $userOrders = Order::getAllOrdersByUserId($user_id);
+            $results = array();
+            foreach ($userOrders as $order){
+                $order_id = $order['id'];
+                $payments = Payment::getAllPaymentsByOrderId($order_id);
+                foreach ($payments as $payment) 
+                {
+                    $results["$order_id"][] = $payment;
+                }
+                
+            }
+            return $results;
+
+            
+    }
 };
 
 ?>

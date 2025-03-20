@@ -40,6 +40,7 @@
         "make_order" => "make_order.php",
         "get_order" => "getOrders.php",
         "pay" => "PayOrder.php",
+        "get_payment" => "getPayments.php",
     ];
 
     if ($RequestEndPoint && isset($ApiFiles[$RequestEndPoint])) {

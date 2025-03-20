@@ -69,7 +69,7 @@ $pageMap = [
     'payments' =>[
         'title' => 'Payments',
         'content' => 'my_payments_content.php',
-        // 'js' => 'order.js',
+         'js' => 'payment.js',
         'header' => 'navbar.php'
     ],
 ];
