@@ -373,6 +373,13 @@
                                                                 $respone['data']['profile_img'] = './uploads/empty.jpg';
                                                             }
                                                             $status = 'success';
+                                                            try{
+                                                            $emailSender = new GmailSmtpSender();
+                                                            $template = EmailTemplate::welcome($json['first_name']." ".$json['last_name']);
+                                                            $emailSender->send($json['email'], $template);
+                                                            }catch(Exception $ee){
+                                                                $message = 'Your Account is Registerred Successfully., but could not send email message to your mail.';
+                                                            }
                                                             $message = 'Your Account is Registerred Successfully.';
                                                         }else{
                                                             $message = 'something went wrong while generating your token.';
